@@ -19,3 +19,5 @@
 *.exe
 *.out
 *.app
+test_c
+test_cpp
