@@ -13,26 +13,52 @@ MemoryPool::MemoryPool(size_t poolSizeInBytes, size_t blockSizeInBytes) :
     poolSize(poolSizeInBytes),
     blockSize(blockSizeInBytes)
 {
-    poolRegion = ::operator new(poolSize, std::nothrow);
+    blockCount = (int)(poolSizeInBytes / blockSizeInBytes);
+    region = new (std::nothrow) char[poolSizeInBytes];
 
-    if (!poolRegion) {
-        void *allocate(size_t sizeInBytes);
 
-        /* do something dramatic */
+    if (!region) {
+        /* allocation failed -- do something dramatic */
         abort();
     }
-    memset(poolRegion, 0, poolSize);
+    memset(region, 0, poolSize);
+
+    //REGION_LIST_ENTRY_T *blockList[] = new (std::nothrow) REGION_LIST_ENTRY_T*[blockCount];
+
+    blocksList = new (std::nothrow) REGION_LIST_ENTRY_T*[blockCount];
+
+    /* @TODO check */
+
+    for (int i = 0; i < blockCount; i++) {
+
+        blocksList[i] = new REGION_LIST_ENTRY_T;
+
+        blocksList[i]->timestamp = 0;
+        blocksList[i]->block = region + (blockSize * i);
+        if (i != (blockCount - 1)) {
+            blocksList[i]->nextBlock = blocksList[i+1];
+        }
+        else {
+            blocksList[i]->nextBlock = NULL;
+        }
+    }
+    firstBlock = (REGION_LIST_ENTRY_T *) region;
+    firstBlock->block = region;
+    firstBlock->timestamp = 0;
+    firstBlock->nextBlock = NULL;
+    firstFreeBlock = firstBlock;
 }
 
 MemoryPool::~MemoryPool()
 {
-    ::operator delete(poolRegion);
-    poolRegion = NULL;
+    ::operator delete(region);
+    region = NULL;
 }
 
 void *MemoryPool::allocate(size_t sizeInBytes)
 {
     /* @TODO */
+    /* check blocks available */
     return ::operator new(sizeInBytes, std::nothrow);
 }
 

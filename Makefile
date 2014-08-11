@@ -2,7 +2,11 @@ CFLAGS=-Wall -pedantic -g
 CXXFLAGS=-Wall -pedantic -g
 PACKAGE_LIB_DIR=/Users/jcarter/Development/freezing-dangerzone
 
-all: lib test_c test_cpp
+# CPP Unit paths
+CPP_UNIT_INCLUDE=/usr/local/Cellar/cppunit/1.12.1/include/cppunit
+CPP_UNIT_LIB=/usr/local/Cellar/cppunit/1.12.1/lib
+
+all: lib test_c test_cpp auto_tests
 
 lib: mempool_c.o mempool_cpp.o
 	${AR} ${ARFLAGS} libmempool.a mempool_c.o mempool_cpp.o
@@ -33,4 +37,11 @@ clean:
 
 # not working on yosemite
 valgrind: test_c
-	valgrind --tool=memcheck --leak-check=full --show-reachable=yes --num-callers=20 --track-fds=yes --dsymutil=yes ./test_c
+	valgrind --tool=memcheck --leak-check=full --show-reachable=yes \
+	--num-callers=20 --track-fds=yes --dsymutil=yes ./test_c
+
+auto_tests: auto_tests.o lib
+	${CXX} ${LDFLAGS} -L${PACKAGE_LIB_DIR} -L${CPP_UNIT_LIB} -lmempool -lcppunit auto_tests.o -o auto_tests
+
+auto_tests.o: auto_tests.cpp
+	${CXX} ${CFLAGS} -I${CPP_UNIT_INCLUDE} -c auto_tests.cpp -o auto_tests.o
