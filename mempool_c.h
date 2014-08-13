@@ -7,14 +7,10 @@
 /* 24 bytes */
 
 struct memoryPoolEntry {
-
     void *region;
     time_t timestamp;
     struct memoryPoolEntry *next;
-
 };
-
-typedef struct memoryPoolEntry MEMORYPOOL_ENTRY_T;
 
 typedef struct {
 
@@ -22,8 +18,8 @@ typedef struct {
     size_t blockSize;
     unsigned blocksAvailable;
     void *region;
-    struct MEMORYPOOL_ENTRY_T *nextFree;
-    struct MEMORYPOOL_ENTRY_T *firstBlock;
+    struct memoryPoolEntry *nextFree;
+    struct memoryPoolEntry *firstBlock;
 
 } MEMORYPOOL_T;
 

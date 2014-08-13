@@ -5,7 +5,6 @@
 
 #define CEILING(x,y) (((x) + (y) - 1) / (y))
 
-
 /* block size should be chosen with regard to alignment */
 void cinit(MEMORYPOOL_T *pool, size_t size, size_t blockSize)
 {
@@ -18,52 +17,65 @@ void cinit(MEMORYPOOL_T *pool, size_t size, size_t blockSize)
     pool->blockSize = blockSize;
 
     unsigned blockCount = pool->size / pool->blockSize;
-
-    printf("\n%d", blockCount);
-
-    MEMORYPOOL_ENTRY_T *currentBlock;
-
     pool->region = malloc(size);
 
     if (!pool->region) {
         pool->blocksAvailable = 0;
     }
 
-    pool->nextFree = malloc(sizeof(MEMORYPOOL_ENTRY_T));
-    currentBlock = (MEMORYPOOL_ENTRY_T *) pool->nextFree;
-    currentBlock->region = pool->region; /* memory region is first block */
-    currentBlock->next = NULL;
+    pool->nextFree = NULL;
+    pool->firstBlock = NULL;
 
-    for (unsigned i = 1; i < blockCount; i++) {
-        MEMORYPOOL_ENTRY_T *temp = malloc(sizeof(MEMORYPOOL_ENTRY_T));
-        temp->region = (char *)pool->region + (i * blockSize);
-        temp->next = NULL;
-        currentBlock->next = (MEMORYPOOL_ENTRY_T *) temp;
+    for (int i = blockCount; i >= 0; i--) {
+        //MEMORYPOOL_ENTRY_T *temp = pool->firstBlock;
+        struct memoryPoolEntry *newEntry = malloc(sizeof(struct memoryPoolEntry));
+        newEntry->region = (char *)pool->region + (i * blockSize);
+        newEntry->timestamp = LONG_MAX;
+        newEntry->next = (struct memoryPoolEntry *) pool->nextFree;
+        pool->nextFree = (struct memoryPoolEntry *) newEntry;
     }
-    // pool->blocksAvailable = blockCount;
-    // pool->firstBlock = NULL;
+    pool->blocksAvailable = blockCount;
 }
 
 void cdestroy(MEMORYPOOL_T *pool)
 {
+    /* need to walk both lists to free entries */
+    struct memoryPoolEntry *temp = (struct memoryPoolEntry *) pool->nextFree;
+
+    while (temp) {
+        struct memoryPoolEntry *next = temp->next;
+        free(temp);
+        temp = next;
+    }
+    temp = (struct memoryPoolEntry *) pool->firstBlock;
+
+    while (temp) {
+        struct memoryPoolEntry *next = temp->next;
+        free(temp);
+        temp = next;
+    }
     free(pool->region);
 }
 
 void *callocate(MEMORYPOOL_T *pool, size_t size)
 {
-    // if (!pool->nextFree) {
-    //     return NULL;
-    // }
+    if (!pool->nextFree) {
+        return NULL;
+    }
+    /* get next free block */
+    struct memoryPoolEntry *temp = (struct memoryPoolEntry *) pool->nextFree;
 
-    // MEMORYPOOL_ENTRY_T *temp = pool->nextFree;
-    // temp->timestamp = LONG_MAX;
+    /* mark it as never expiring */
+    temp->timestamp = LONG_MAX;
 
-    // temp->next = pool->firstBlock;
-    // pool->firstBlock = temp;
-    // pool->nextFree = temp->next;
-    // return temp->region;
-    //return NULL;
-    return malloc(size);
+    /* remove it from free list */
+    pool->nextFree = (struct memoryPoolEntry *) temp->next;
+
+    /* insert block at head of in use list */
+    temp->next = (struct memoryPoolEntry *) pool->firstBlock;
+    pool->firstBlock = (struct memoryPoolEntry *) temp;
+
+    return temp->region;
 }
 
 void cmark(MEMORYPOOL_T *pool, int timestamp)
