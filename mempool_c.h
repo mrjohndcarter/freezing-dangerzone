@@ -6,13 +6,15 @@
 
 /* 24 bytes */
 
-typedef struct {
+struct memoryPoolEntry {
 
     void *region;
     time_t timestamp;
-    struct MEMORYPOOL_ENTRY_T *next;
+    struct memoryPoolEntry *next;
 
-} MEMORYPOOL_ENTRY_T;
+};
+
+typedef struct memoryPoolEntry MEMORYPOOL_ENTRY_T;
 
 typedef struct {
 
