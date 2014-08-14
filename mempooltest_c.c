@@ -1,31 +1,30 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <time.h>
 
 #include "mempool_c.h"
 
 int main(void)
 {
-    printf("Mempool C test.");
-
-    MEMORYPOOL_T mpool;
-    cinit(&mpool, 1024, 8);
-
-    // int *d = callocate(&mpool, sizeof(int));
-    // *d = 77;
-
-    // printf("\nd = %d", *d);
-
-    // int *e = callocate(&mpool, sizeof(int));
-    // *e = 88;
-
-    //printf("\ne = %d", *e);
+    printf("* Mempool C Test *");
+    SF_MEMORYPOOL_T mpool;
+    time_t timeStamp;
+    sf_init(&mpool, 1024, 8);
 
     for (int i = 0; i < (int)1024 / 8; i++) {
-        int *t = callocate(&mpool, sizeof(int));
+        int *t = sf_allocate(&mpool, sizeof(int));
         *t = i;
-        printf("%d,", *t);
+
+        if (i == 8) {
+            time(&timeStamp);
+            sf_mark(&mpool, timeStamp);
+        }
     }
 
-    cdestroy(&mpool);
-
+    sleep(1);
+    time(&timeStamp);
+    sf_free(&mpool, timeStamp);
+    sf_destroy(&mpool);
+    printf("\n");
     return 0;
 }
