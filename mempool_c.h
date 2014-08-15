@@ -4,11 +4,9 @@
 #include <stdio.h>
 #include <time.h>
 
-
 /**
  * (S)tatic (F)ixed block size memory pool.
  */
-
 
 /* 24 bytes -- will align to 8 bytes */
 /* note: because we preallocate we can't use usual union approach */
@@ -80,5 +78,15 @@ void sf_mark(SF_MEMORYPOOL_T *pool, time_t timestamp);
  */
 
 void sf_free(SF_MEMORYPOOL_T *pool, time_t timestamp);
+
+/**
+ * (V)ariable (B)lock (L)ow (F)ragmentation memory pool.
+ */
+
+void vblf_init(SF_MEMORYPOOL_T *pool, size_t size, size_t blockSize, size_t maxAllocationSize);
+void vblf_destroy(SF_MEMORYPOOL_T *pool);
+void *vblf_allocate(SF_MEMORYPOOL_T *pool, size_t size);
+void vblf_mark(SF_MEMORYPOOL_T *pool, time_t timestamp);
+void vblf_free(SF_MEMORYPOOL_T *pool, time_t timestamp);
 
 #endif
