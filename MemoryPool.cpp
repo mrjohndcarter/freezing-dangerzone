@@ -1,7 +1,13 @@
-#include "mempool_c.h"
-
+#include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
+
+#include "MemoryPool.h"
+
+namespace memory_pool
+{
+
+/* "C" interface */
 
 /* block size should be chosen with regard to alignment */
 void sf_init(SF_MEMORYPOOL_T *pool, size_t size, size_t blockSize)
@@ -24,7 +30,9 @@ void sf_init(SF_MEMORYPOOL_T *pool, size_t size, size_t blockSize)
     pool->firstBlock = NULL;
 
     for (int i = 0; i < blockCount; i++) {
-        struct sf_memoryPoolEntry *newEntry = malloc(sizeof(struct sf_memoryPoolEntry));
+        struct sf_memoryPoolEntry *newEntry = (struct sf_memoryPoolEntry *) \
+                                              malloc(sizeof(struct sf_memoryPoolEntry));
+
         newEntry->region = (char *)pool->region + (i * blockSize);
         newEntry->timestamp = LONG_MAX;
         newEntry->next = pool->nextFree;
@@ -67,7 +75,8 @@ void *sf_allocate(SF_MEMORYPOOL_T *pool, size_t size)
     }
 
     /* get next free block */
-    struct sf_memoryPoolEntry *temp = (struct sf_memoryPoolEntry *) pool->nextFree;
+    struct sf_memoryPoolEntry *temp = \
+                                      (struct sf_memoryPoolEntry *) pool->nextFree;
 
     /* mark it as never expiring */
     temp->timestamp = LONG_MAX;
@@ -134,3 +143,48 @@ void sf_free(SF_MEMORYPOOL_T *pool, time_t timestamp)
     }
 }
 
+/* Memory Pool Stuff */
+
+MemoryPool::MemoryPool(size_t totalSizeInBytes, size_t blockSizeInBytes)
+{
+    sf_init(&managedPool, totalSizeInBytes, blockSizeInBytes);
+}
+MemoryPool::~MemoryPool()
+{
+    sf_destroy(&managedPool);
+}
+
+void *MemoryPool::allocate(size_t sizeInBytes)
+{
+    return sf_allocate(&managedPool, sizeInBytes);
+}
+
+void MemoryPool::mark(time_t timestamp)
+{
+    return sf_mark(&managedPool, timestamp);
+}
+
+void MemoryPool::purge(time_t timestamp)
+{
+    return sf_mark(&managedPool, timestamp);
+}
+
+PooledObject::PooledObject() {
+}
+
+PooledObject::~PooledObject() {
+    // MemoryPool *p = this->pool();
+    // if (p) {
+    //     delete p;
+    // }
+}
+
+// MemoryPool *PooledObject::pool(void) {
+//     return NULL;
+// }
+
+
+
+
+
+}
