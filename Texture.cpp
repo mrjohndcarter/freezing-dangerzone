@@ -5,10 +5,8 @@
 namespace example_usage
 {
 
-
 Texture::Texture(int identifier) : id(identifier)
 {
-
 }
 
 void Texture::loadTexture(int *texture)
@@ -17,9 +15,8 @@ void Texture::loadTexture(int *texture)
 }
 
 TextureFactory::TextureFactory(int maxTexturesInPool) :
-    factoryPool(maxTexturesInPool * sizeof(Texture), sizeof(Texture))
+    factoryPool(maxTexturesInPool *sizeof(Texture), sizeof(Texture))
 {
-
 }
 
 Texture *TextureFactory::create(int identifier)
@@ -34,12 +31,13 @@ void TextureFactory::mark(time_t timestamp)
     factoryPool.mark(timestamp);
 }
 
-void TextureFactory::purge(time_t timestamp)
+void TextureFactory::free(time_t timestamp)
 {
-    factoryPool.purge(timestamp);
+    factoryPool.free(timestamp);
 }
 
-unsigned TextureFactory::availableBlocks(void) {
+unsigned TextureFactory::availableBlocks(void)
+{
     return factoryPool.availableBlocks();
 }
 

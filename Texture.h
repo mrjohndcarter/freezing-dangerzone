@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+/* constants used for the Texture class */
+
 const int POOLED_TEXTURE_MAX_WIDTH = 256;
 const int POOLED_TEXTURE_MAX_HEIGHT = 256;
 const int POOLED_TEXTURE_SIZE = POOLED_TEXTURE_MAX_WIDTH *\
@@ -10,11 +12,18 @@ const int POOLED_TEXTURE_SIZE = POOLED_TEXTURE_MAX_WIDTH *\
 namespace example_usage
 {
 
+/**
+ * Texture
+ *
+ * Represents a texture.
+ * Not really.  It's a candidate for the worst texture class ever, it really
+ * just exists to consume memory.
+ */
+
 class Texture
 {
     friend inline std::ostream &operator<<(std::ostream &os,
                                            const example_usage::Texture &t);
-
 public:
     Texture(int identifer);
     void loadTexture(int *texture);
@@ -37,22 +46,32 @@ inline std::ostream &operator<<(std::ostream &os,
     return os;
 }
 
+/**
+ * TextureFactory
+ *
+ * Creates and allocates above textures.
+ * Uses a very loose interpretation of the factory pattern.
+ *
+ * Not a singleton (Will allow multiple texture pools.)
+ *
+ * Manages the pool of allocate textures, allows you to call mark, free
+ * on everything allocated to that point.
+ */
+
 class TextureFactory
 {
     friend inline std::ostream &operator<<(std::ostream &os,
                                            const example_usage::TextureFactory &tp);
-
 public:
     TextureFactory(int maxTexturesInPool);
 
     Texture *create(int identifier);
     void mark(time_t timestamp);
-    void purge(time_t timestamp);
+    void free(time_t timestamp);
 
     unsigned availableBlocks(void);
 
 protected:
-
     memory_pool::MemoryPool factoryPool;
 };
 

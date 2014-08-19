@@ -18,4 +18,4 @@ clean:
 # not working on yosemite
 valgrind: test_cpp
 	valgrind --tool=memcheck --leak-check=full --show-reachable=yes \
-	--num-callers=20 --track-fds=yes --dsymutil=yes ./test_c
+	--num-callers=20 --track-fds=yes --dsymutil=yes ./test_cpp

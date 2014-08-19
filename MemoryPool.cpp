@@ -167,7 +167,7 @@ void MemoryPool::mark(time_t timestamp)
     return sf_mark(&managedPool, timestamp);
 }
 
-void MemoryPool::purge(time_t timestamp)
+void MemoryPool::free(time_t timestamp)
 {
     return sf_free(&managedPool, timestamp);
 }
@@ -175,6 +175,5 @@ void MemoryPool::purge(time_t timestamp)
 unsigned MemoryPool::availableBlocks(void) {
     return managedPool.blocksAvailable;
 }
-
 
 }

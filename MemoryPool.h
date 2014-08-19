@@ -102,7 +102,7 @@ public:
 
     void *allocate(size_t sizeInBytes);
     void mark(time_t timestamp);
-    void purge(time_t timestamp);
+    void free(time_t timestamp);
 
     unsigned availableBlocks(void);
 
@@ -111,14 +111,12 @@ private:
     SF_MEMORYPOOL_T managedPool;
 };
 
-inline std::ostream &operator<<(std::ostream &os, const memory_pool::MemoryPool &mp) {
+inline std::ostream &operator<<(std::ostream &os, const memory_pool::MemoryPool &mp)
+{
     os << "\nPool Size: " << mp.managedPool.size;
     os << "\nBlock Size: " << mp.managedPool.blockSize;
     os << "\nBlocks Available/Blocks Total: " << mp.managedPool.blocksAvailable << "/" <<  (int)(mp.managedPool.size / mp.managedPool.blockSize);
     return os;
 }
-
-
 }
-
 #endif

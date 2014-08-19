@@ -17,7 +17,7 @@ int *randomTexture()
 int main(void)
 {
     srand(time(NULL));
-    example_usage::TextureFactory tf(4);
+    example_usage::TextureFactory tf(256);
 
     int count = 0;
 
@@ -40,7 +40,7 @@ int main(void)
     std::cout << tf;
 
     tf.mark(1000);
-    tf.purge(2000);
+    tf.free(2000);
 
     std::cout << "\n";
     std::cout << tf;
@@ -52,6 +52,10 @@ int main(void)
     } else {
         std::cout << "\nAfter empty allocation succeedded (YAY!).";
     }
+
+    std::cout << "\n";
+    std::cout << tf;
+
 }
 
 
