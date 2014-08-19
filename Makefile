@@ -1,9 +1,6 @@
-CFLAGS=-std=c99 -Wall -pedantic -g
 CXXFLAGS=-Wall -pedantic -g
 
 all: test_cpp MemoryPool.o Texture.o
-
-# C++ stuff
 
 MemoryPool.o: MemoryPool.h MemoryPool.cpp
 	${CXX} ${CXXFLAGS} -c MemoryPool.cpp -o MemoryPool.o

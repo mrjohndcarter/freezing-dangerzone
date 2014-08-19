@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "MemoryPool.h"
 
@@ -91,6 +92,8 @@ void *sf_allocate(SF_MEMORYPOOL_T *pool, size_t size)
     temp->next = (struct sf_memoryPoolEntry *) pool->firstBlock;
     pool->firstBlock = (struct sf_memoryPoolEntry *) temp;
 
+    /* @TODO memset */
+
     return temp->region;
 }
 
@@ -166,25 +169,12 @@ void MemoryPool::mark(time_t timestamp)
 
 void MemoryPool::purge(time_t timestamp)
 {
-    return sf_mark(&managedPool, timestamp);
+    return sf_free(&managedPool, timestamp);
 }
 
-PooledObject::PooledObject() {
+unsigned MemoryPool::availableBlocks(void) {
+    return managedPool.blocksAvailable;
 }
-
-PooledObject::~PooledObject() {
-    // MemoryPool *p = this->pool();
-    // if (p) {
-    //     delete p;
-    // }
-}
-
-// MemoryPool *PooledObject::pool(void) {
-//     return NULL;
-// }
-
-
-
 
 
 }

@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <iostream>
+
 #include "mempool_c.h"
 
 #ifndef _XXXXX_MEMPOOL_CPP_H
@@ -92,6 +94,7 @@ void sf_free(SF_MEMORYPOOL_T *pool, time_t timestamp);
 
 class MemoryPool
 {
+    friend inline std::ostream &operator<<(std::ostream &os, const memory_pool::MemoryPool &mp);
 
 public:
     MemoryPool(size_t totalSizeInBytes, size_t blockSizeInBytes);
@@ -101,26 +104,19 @@ public:
     void mark(time_t timestamp);
     void purge(time_t timestamp);
 
+    unsigned availableBlocks(void);
+
 private:
     MemoryPool(MemoryPool &);
     SF_MEMORYPOOL_T managedPool;
 };
 
-/** Base class for Pooled Objects
- *
- */
-
-class PooledObject
-{
-
-public:
-    PooledObject();
-    virtual ~PooledObject();
-
-protected:
-    MemoryPool *myPool;
-};
-
+inline std::ostream &operator<<(std::ostream &os, const memory_pool::MemoryPool &mp) {
+    os << "\nPool Size: " << mp.managedPool.size;
+    os << "\nBlock Size: " << mp.managedPool.blockSize;
+    os << "\nBlocks Available/Blocks Total: " << mp.managedPool.blocksAvailable << "/" <<  (int)(mp.managedPool.size / mp.managedPool.blockSize);
+    return os;
+}
 
 
 }
