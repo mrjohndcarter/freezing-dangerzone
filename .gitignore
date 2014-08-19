@@ -24,3 +24,4 @@ core
 test_c
 test_cpp
 auto_tests
+benchmark

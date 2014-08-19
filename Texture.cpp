@@ -5,25 +5,19 @@
 namespace example_usage
 {
 
-memory_pool::MemoryPool *Texture::objectPool = NULL;
 
-Texture::Texture() {
-    myPool = Texture::pool();
-}
-
-memory_pool::MemoryPool *Texture::pool(void)
+Texture::Texture(int identifier) : id(identifier)
 {
-    if (!objectPool) {
-       Texture::objectPool = new memory_pool::MemoryPool(SIMULTANEOUS_POOLED_TEXTURES, sizeof(Texture));
-    }
-    return Texture::objectPool;
+
 }
 
-void Texture::loadTexture(int *texture) {
+void Texture::loadTexture(int *texture)
+{
     memcpy(this->texture, texture, POOLED_TEXTURE_SIZE * sizeof(int));
 }
 
-void Texture::printTexture() {
+void Texture::printTexture()
+{
     for (int i = 0; i < POOLED_TEXTURE_MAX_HEIGHT; i++) {
         std::cout << "\n";
         for (int j = 0; j < POOLED_TEXTURE_MAX_WIDTH; j++) {
@@ -31,6 +25,30 @@ void Texture::printTexture() {
         }
     }
 }
+
+TextureFactory::TextureFactory(int maxTexturesInPool) :
+    factoryPool(maxTexturesInPool * sizeof(Texture), sizeof(Texture))
+{
+
+}
+
+Texture *TextureFactory::create(int identifier)
+{
+    void *region = factoryPool.allocate(sizeof(Texture));
+    Texture *t = new(region) Texture(identifier);
+    return t;
+}
+
+void TextureFactory::mark(time_t timestamp)
+{
+    factoryPool.mark(timestamp);
+}
+
+void TextureFactory::purge(time_t timestamp)
+{
+    factoryPool.mark(timestamp);
+}
+
 
 
 }

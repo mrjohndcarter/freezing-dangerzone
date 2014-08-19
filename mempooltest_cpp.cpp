@@ -15,20 +15,9 @@ int *randomTexture() {
 int main(void) {
 
     srand(time(NULL));
-    
-    example_usage::Texture *t;
-
-    t = new example_usage::Texture;
-
+    example_usage::TextureFactory tf(16);
+    example_usage::Texture *t = tf.create(0);
     t->loadTexture(randomTexture());
-
     t->printTexture();
-
-    delete t;
-
-    return 0;
-
-
-
 }
 

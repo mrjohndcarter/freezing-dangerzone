@@ -14,30 +14,30 @@ namespace example_usage
 class Texture : public memory_pool::PooledObject
 {
 public:
-
-    Texture();
-
-    static memory_pool::MemoryPool *pool(void);
-
-    inline void *operator new(size_t size)
-    {
-        return malloc(size);
-        pool() ? pool()->allocate(size) : NULL;
-    }
-
-    inline void operator delete(void *p)
-    {
-        /* nothing to do */
-    }
-
+    Texture(int identifer);
     void loadTexture(int *texture);
-
     void printTexture();
 
 protected:
 
+    int id;
     int texture[POOLED_TEXTURE_SIZE]; /* assume 1 byte each for RGBA */
-    static memory_pool::MemoryPool *objectPool;
 };
+
+
+class TextureFactory {
+
+public:
+    TextureFactory(int maxTexturesInPool);
+
+    Texture* create(int identifier);
+    void mark(time_t timestamp);
+    void purge(time_t timestamp);
+
+protected:
+
+    memory_pool::MemoryPool factoryPool;
+};
+
 
 }

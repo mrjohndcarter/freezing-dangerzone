@@ -118,11 +118,8 @@ public:
     virtual ~PooledObject();
 
 protected:
-
     MemoryPool *myPool;
-
 };
-
 
 
 
