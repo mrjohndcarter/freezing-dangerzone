@@ -1,6 +1,7 @@
 #include "Texture.h"
 
 #include <iostream>
+#include <string.h>
 
 namespace example_usage
 {

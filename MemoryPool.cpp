@@ -30,7 +30,7 @@ void sf_init(SF_MEMORYPOOL_T *pool, size_t size, size_t blockSize)
     pool->nextFree = NULL;
     pool->firstBlock = NULL;
 
-    for (int i = 0; i < blockCount; i++) {
+    for (int i = 0; i < (int)blockCount; i++) {
         struct sf_memoryPoolEntry *newEntry = (struct sf_memoryPoolEntry *) \
                                               malloc(sizeof(struct sf_memoryPoolEntry));
 

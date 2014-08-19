@@ -24,7 +24,9 @@ int main(void)
     example_usage::Texture *t;
 
     while ((t = tf.create(count++))) {
-        t->loadTexture(randomTexture());
+        int *tempTexture = randomTexture();
+        t->loadTexture(tempTexture);
+        free(tempTexture);
         std::cout << "\n\n" << *t;
     }
 
